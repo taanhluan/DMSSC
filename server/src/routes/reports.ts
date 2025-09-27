@@ -1,32 +1,30 @@
-const express = require('express');
+import { Router } from "express";
+import type { DB } from "../db";
 
-module.exports = function(db){
-  const r = express.Router();
+export default function reportRoutes(db: DB) {
+  const r = Router();
 
-  // Ví dụ: tổng giờ theo PIC
-  r.get('/hours-by-pic', (req, res) => {
-    const agg = {};
+  r.get("/hours-by-pic", (_req, res) => {
+    const agg: Record<string, number> = {};
     db.tasks.forEach(t => {
-      const key = t.pic || 'N/A';
-      agg[key] = (agg[key] || 0) + (Number(t.hours) || 0);
+      const key = (t.pic ?? "UNKNOWN").toString();
+      agg[key] = (agg[key] ?? 0) + (Number(t.hours) || 0);
     });
     res.json(agg);
   });
 
-  // Ví dụ: tổng giờ theo SR
-  r.get('/hours-by-sr', (req, res) => {
-    const agg = {};
+  r.get("/hours-by-sr", (_req, res) => {
+    const agg: Record<string, number> = {};
     db.tasks.forEach(t => {
-      const key = t.sr || 'N/A';
-      agg[key] = (agg[key] || 0) + (Number(t.hours) || 0);
+      const key = (t.sr ?? "UNKNOWN").toString();
+      agg[key] = (agg[key] ?? 0) + (Number(t.hours) || 0);
     });
     res.json(agg);
   });
 
-  // Mặc định
-  r.get('/', (req, res) => {
-    res.json({ ok: true });
+  r.get("/", (_req, res) => {
+    res.json({ ok: true, endpoints: ["/hours-by-pic", "/hours-by-sr"] });
   });
 
   return r;
-};
+}

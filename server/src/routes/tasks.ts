@@ -1,62 +1,44 @@
-const express = require('express');
+import { Router } from "express";
+import type { DB, Task } from "../db";
+import { newId } from "../db";
 
-module.exports = function(db){
-  const r = express.Router();
-  const newId = (prefix) => `${prefix}-${String(Math.random()).slice(2,8).toUpperCase()}`;
+export default function taskRoutes(db: DB) {
+  const r = Router();
 
-  // LIST
-  r.get('/', (req, res) => {
-    res.json(db.tasks);
-  });
+  r.get("/", (_req, res) => res.json(db.tasks));
 
-  // CREATE
-  r.post('/', (req, res) => {
-    const b = req.body || {};
-    const item = {
-      id: newId('TK'),
-      sr: b.sr || '',
-      title: b.title || '',
-      description: b.description || '', // FE: Task Note map vào description
-      pic: b.pic || '',
-      status: b.status || 'TODO',
-      priority: b.priority || 'MEDIUM',
-      startDate: b.startDate || null,
-      endDate: b.endDate || null,
-      hours: Number(b.hours || 0),
-      // gợi ý: nếu muốn lưu site theo SR, có thể map ở FE rồi gửi thêm b.site
-      site: b.site || ''
+  r.post("/", (req, res) => {
+    const b = (req.body ?? {}) as Partial<Task>;
+    const task: Task = {
+      id: newId("TK"),
+      sr: b.sr ?? "",
+      title: b.title ?? null,
+      description: b.description ?? null,
+      site: b.site ?? null,
+      pic: b.pic ?? null,
+      status: b.status ?? "NEW",
+      priority: b.priority ?? "MEDIUM",
+      startDate: (b.startDate as string | null) ?? null,
+      endDate: (b.endDate as string | null) ?? null,
+      hours: b.hours ?? 0
     };
-    db.tasks.push(item);
-    res.json(item);
+    db.tasks.push(task);
+    res.status(201).json(task);
   });
 
-  // UPDATE
-  r.put('/:id', (req, res) => {
+  r.put("/:id", (req, res) => {
     const item = db.tasks.find(x => x.id === req.params.id);
-    if (!item) return res.status(404).json({ error: 'not found' });
-    const b = req.body || {};
-    Object.assign(item, {
-      sr: b.sr ?? item.sr,
-      title: b.title ?? item.title,
-      description: b.description ?? item.description,
-      pic: b.pic ?? item.pic,
-      status: b.status ?? item.status,
-      priority: b.priority ?? item.priority,
-      startDate: b.startDate ?? item.startDate,
-      endDate: b.endDate ?? item.endDate,
-      hours: (b.hours !== undefined) ? Number(b.hours) : item.hours,
-      site: b.site ?? item.site
-    });
+    if (!item) return res.status(404).json({ error: "Not found" });
+    Object.assign(item, req.body ?? {});
     res.json(item);
   });
 
-  // DELETE
-  r.delete('/:id', (req, res) => {
+  r.delete("/:id", (req, res) => {
     const idx = db.tasks.findIndex(x => x.id === req.params.id);
-    if (idx < 0) return res.status(404).json({ error: 'not found' });
-    const del = db.tasks.splice(idx, 1)[0];
-    res.json(del);
+    if (idx === -1) return res.status(404).json({ error: "Not found" });
+    const [removed] = db.tasks.splice(idx, 1);
+    res.json(removed);
   });
 
   return r;
-};
+}

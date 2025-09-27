@@ -1,21 +1,14 @@
-const express = require('express');
+import { Router } from "express";
+import type { DB } from "../db";
 
-module.exports = function(db){
-  const r = express.Router();
-
-  r.get('/', (req, res) => {
+export default function dashboardRoutes(db: DB) {
+  const r = Router();
+  r.get("/", (_req, res) => {
     const totalTasks = db.tasks.length;
-    const done = db.tasks.filter(t => t.status === 'DONE').length;
+    const done = db.tasks.filter(t => t.status === "DONE").length;
     const open = totalTasks - done;
     const hours = db.tasks.reduce((a, b) => a + (Number(b.hours) || 0), 0);
-    res.json({
-      backlog: db.backlog.length,
-      tasks: totalTasks,
-      done,
-      open,
-      hours
-    });
+    res.json({ backlog: db.backlog.length, tasks: totalTasks, done, open, hours });
   });
-
   return r;
-};
+}

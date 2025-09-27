@@ -1,14 +1,16 @@
-const express = require('express');
-const dashboardRoutes = require('./dashboard');
-const backlogRoutes = require('./backlog');
-const taskRoutes = require('./tasks');
-const reportRoutes = require('./reports');
+import { Router } from "express";
+import type { DB } from "../db";
 
-const router = express.Router();
+import dashboardRoutes from "./dashboard";
+import backlogRoutes from "./backlog";
+import taskRoutes from "./tasks";
+import reportRoutes from "./reports";
 
-router.use('/dashboard', dashboardRoutes);
-router.use('/backlog', backlogRoutes);
-router.use('/tasks', taskRoutes);
-router.use('/reports', reportRoutes);
-
-module.exports = router;
+export default function createRoutes(db: DB) {
+  const router = Router();
+  router.use("/dashboard", dashboardRoutes(db));
+  router.use("/backlog", backlogRoutes(db));
+  router.use("/tasks", taskRoutes(db));
+  router.use("/reports", reportRoutes(db));
+  return router;
+}
