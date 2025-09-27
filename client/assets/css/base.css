@@ -1,0 +1,145 @@
+/* ============ DAI-ICHI MEKONG — FLAT PRO UI ============ */
+:root{
+  --bg:#f6f7fb;        /* nền xám rất nhạt */
+  --surface:#ffffff;   /* bề mặt phẳng trắng */
+  --text:#1f2937;      /* xám đậm */
+  --muted:#6b7280;     /* xám ghi */
+  --brand:#E60012;     /* đỏ Dai-ichi */
+  --ok:#0a8754;
+  --danger:#d32f2f;
+  --line:#e5e7eb;      /* viền mảnh */
+  --radius:10px;
+  --trans: all .18s ease;
+}
+
+*{box-sizing:border-box}
+html,body{height:100%;margin:0;font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif}
+img,svg,canvas{display:block;max-width:100%}
+
+/* Layout */
+body{
+  display:grid; grid-template-columns:220px minmax(0,1fr); grid-template-rows:auto 1fr;
+  background:var(--bg); color:var(--text);
+}
+
+/* Sidebar */
+.sidebar{
+  grid-column:1; grid-row:1 / span 2;
+  background:var(--surface); border-right:1px solid var(--line);
+  padding:18px; position:sticky; top:0; height:100vh; overflow:auto;
+}
+.brand-name{
+  font:700 14px/1.4 Inter,system-ui,sans-serif;
+  color:var(--brand); text-transform:uppercase; letter-spacing:.6px; margin:0 0 18px;
+}
+.sidebar a{
+  display:block; padding:10px 12px; border-radius:8px; color:#4b5563; text-decoration:none; transition:var(--trans);
+}
+.sidebar a:hover{ background:#f9fafb; color:var(--brand) }
+.sidebar a.active{ background:#fff1f2; color:var(--brand) }
+
+/* Topbar */
+.topbar{
+  grid-column:2; grid-row:1; display:flex; align-items:center; justify-content:space-between;
+  padding:12px 18px; background:var(--brand); color:#fff;
+}
+.topbar .title{ font-weight:700 }
+
+/* Content */
+main#app{ grid-column:2; grid-row:2; padding:24px 16px 40px; }
+main#app>.card{ max-width:960px; margin:16px auto; }
+
+/* Card — hoàn toàn phẳng, chỉ 1px border */
+.card{
+  background:var(--surface); border:1px solid var(--line); border-radius:var(--radius);
+  padding:16px; transition:var(--trans);
+}
+.card h3{ margin:0 0 8px; font-size:18px; font-weight:600 }
+.card .sub{ margin:0 0 10px; color:var(--muted); font-size:12px }
+
+/* Form grid */
+.row{ display:grid; gap:12px; grid-template-columns:repeat(auto-fit,minmax(240px,1fr)); align-items:center }
+
+/* Inputs — phẳng, không bóng */
+.input,select{
+  width:100%; height:38px; padding:8px 12px;
+  background:#fff; color:var(--text);
+  border:1px solid var(--line); border-radius:8px; transition:var(--trans);
+}
+.input:focus,select:focus{ outline:none; border-color:var(--brand); box-shadow:0 0 0 2px rgba(230,0,18,.12) }
+select{
+  appearance:none; -webkit-appearance:none; -moz-appearance:none;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12'%3E%3Cpath fill='%236b7280' d='M6 9 1 3h10z'/%3E%3C/svg%3E");
+  background-repeat:no-repeat; background-position:right 10px center; padding-right:26px;
+}
+input[type="date"]::-webkit-calendar-picker-indicator{ filter:invert(30%) }
+
+/* Buttons — phẳng, không shadow; chỉ đổi màu khi hover */
+.btn{
+  display:inline-flex; align-items:center; justify-content:center;
+  height:38px; padding:0 14px; border-radius:8px;
+  border:1px solid var(--line); background:#fff; color:var(--text);
+  cursor:pointer; transition:var(--trans);
+}
+.btn:hover{ background:#f9fafb }
+.btn.primary{ background:var(--brand); border-color:var(--brand); color:#fff }
+.btn.primary:hover{ filter:brightness(1.06) }
+.btn.ghost{ background:transparent }
+.btn.danger{ background:#fff; border-color:#fecaca; color:var(--danger) }
+.btn.danger:hover{ background:#fff1f2 }
+
+/* Table — đường kẻ mảnh, hover nhẹ */
+.table{ width:100%; border-collapse:collapse; }
+.table thead th{
+  text-align:left; padding:10px 12px; color:#374151;
+  border-bottom:2px solid var(--line); font-weight:600;
+}
+.table td{ padding:10px 12px; border-bottom:1px solid var(--line); font-size:14px }
+.table tbody tr:hover{ background:#f9fafb }
+.table td .actions{ display:flex; gap:8px }
+
+/* Badges — màu nhẹ, phẳng */
+.badge{
+  display:inline-flex; align-items:center; padding:3px 10px;
+  border-radius:999px; border:1px solid var(--line); background:#f9fafb; color:#6b7280; font-size:12px;
+}
+.badge.state-IN_PROGRESS{ background:#fff1f2; border-color:#fecaca; color:var(--brand) }
+.badge.state-COMPLETED{ background:#ecfdf5; border-color:#bbf7d0; color:#166534 }
+.badge.state-ON_HOLD{ background:#fff7ed; border-color:#fed7aa; color:#9a3412 }
+
+/* KPI — phẳng, viền mảnh */
+.grid{ display:grid; grid-template-columns:repeat(auto-fit,minmax(160px,1fr)); gap:12px }
+.kpi{ text-align:center; border:1px solid var(--line); border-radius:8px; padding:10px; background:#fff }
+.kpi .num{ font-size:24px; font-weight:700; color:var(--brand) }
+
+/* Toast — phẳng, slide/fade nhẹ */
+#toast{ position:fixed; right:16px; bottom:16px; display:flex; flex-direction:column; gap:8px; z-index:100 }
+.toast{
+  background:#fff; border:1px solid var(--line); border-radius:8px;
+  padding:10px 12px; min-width:220px; opacity:0; transform:translateY(10px);
+  animation:toastIn .2s ease forwards;
+}
+.toast.ok{ border-left:3px solid var(--ok) }
+.toast.err{ border-left:3px solid var(--danger) }
+@keyframes toastIn{ to{ opacity:1; transform:translateY(0) } }
+
+/* Helpers */
+label.small{ font-size:12px; color:var(--muted) }
+.muted{ color:var(--muted) }
+
+/* Tracks cell (Backlog) */
+.tracks-cell{ vertical-align:top; min-width:160px }
+.tracks-col{ display:flex; flex-direction:column; gap:6px }
+.t-line{ display:flex; gap:8px; flex-wrap:wrap }
+.t-phase{ color:#374151; font-weight:600; min-width:180px }
+.t-pic{ color:#4b5563 }
+.badge.t-prg{ padding:2px 8px }
+
+/* Responsive */
+@media (max-width:760px){
+  body{ grid-template-columns:1fr; grid-template-rows:auto auto 1fr }
+  .sidebar{ grid-row:1; height:auto; position:relative }
+  .topbar{ grid-row:2 }
+  main#app{ grid-row:3; padding:18px 12px }
+  main#app>.card{ margin:12px 0 }
+}

@@ -1,0 +1,27 @@
+{
+  "backlog": [
+    {
+      "id": "BL-000001",
+      "sr": "SR-1001",
+      "description": "Setup skeleton",
+      "status": "NEW",
+      "owner": "Jonathan",
+      "priority": "HIGH",
+      "dueDate": "2025-10-01",
+      "onOff": "ON",
+      "progress": 0,
+      "complex": "M"
+    }
+  ],
+  "tasks": [
+    {
+      "id": "TK-000001",
+      "title": "Wire FE",
+      "description": "Hook router + views",
+      "status": "TODO",
+      "hours": 0,
+      "sr": "SR-1001",
+      "pic": "Jonathan"
+    }
+  ]
+}

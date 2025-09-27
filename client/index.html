@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <meta name="color-scheme" content="dark light" />
+  <title>DMSSC Management System</title>
+  <link rel="stylesheet" href="/assets/css/base.css" />
+  <!-- Chart.js qua CDN (tuỳ chọn, dùng cho trang Report) -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js" defer></script>
+  <style>
+    /* highlight tab đang chọn (client-side bằng CSS + :target thì không hợp, nên dùng CSS dựa trên hash + script nhỏ trong app.js) */
+    .sidebar nav a.active { color: var(--text); font-weight: 600; }
+    .sidebar nav a { display: block; }
+    /* đảm bảo main chiếm full chiều cao dưới topbar */
+    html,body { height:100%; }
+  </style>
+</head>
+<body>
+  <aside class="sidebar">
+    <h2>DMSSC</h2>
+    <nav>
+      <a href="#/dashboard" data-route>Dashboard</a>
+      <a href="#/backlog" data-route>Backlog</a>
+      <a href="#/tasks" data-route>Tasks</a>
+      <a href="#/report" data-route>Report</a>
+    </nav>
+  </aside>
+
+  <header class="topbar" role="banner">
+    <div class="title">DMSSC Management System</div>
+    <div id="status" class="muted"></div>
+  </header>
+
+  <main id="app" role="main"></main>
+  <div id="toast" aria-live="polite" aria-atomic="true"></div>
+
+  <!-- 1) Global API (window.API) - phải load trước để views dùng -->
+  <script src="/js/api.js"></script>
+
+  <!-- 2) App module (tự import router, views, v.v.) -->
+  <script type="module" src="/js/app.js"></script>
+</body>
+</html>
