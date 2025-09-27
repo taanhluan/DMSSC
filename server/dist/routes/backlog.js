@@ -1,12 +1,15 @@
-import { Router } from "express";
-import { newId } from "../db";
-export default function backlogRoutes(db) {
-    const r = Router();
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.default = backlogRoutes;
+const express_1 = require("express");
+const db_1 = require("../db");
+function backlogRoutes(db) {
+    const r = (0, express_1.Router)();
     r.get("/", (_req, res) => res.json(db.backlog));
     r.post("/", (req, res) => {
         const b = (req.body ?? {});
         const item = {
-            id: newId("BL"),
+            id: (0, db_1.newId)("BL"),
             sr: b.sr ?? "",
             description: b.description ?? "",
             site: b.site ?? null,

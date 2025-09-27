@@ -1,6 +1,9 @@
-import { Router } from "express";
-export default function reportRoutes(db) {
-    const r = Router();
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.default = reportRoutes;
+const express_1 = require("express");
+function reportRoutes(db) {
+    const r = (0, express_1.Router)();
     r.get("/hours-by-pic", (_req, res) => {
         const agg = {};
         db.tasks.forEach(t => {

@@ -1,6 +1,10 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.db = void 0;
+exports.newId = newId;
 // server/src/db.ts
-import { v4 as uuid } from "uuid";
-export const db = {
+const uuid_1 = require("uuid");
+exports.db = {
     backlog: [
         {
             id: "BL-000001",
@@ -30,8 +34,8 @@ export const db = {
         }
     ]
 };
-export function newId(prefix) {
+function newId(prefix) {
     // Lấy 6 ký tự hex đầu tiên (bỏ dấu gạch) cho gọn
-    const short = uuid().replace(/-/g, "").slice(0, 6).toUpperCase();
+    const short = (0, uuid_1.v4)().replace(/-/g, "").slice(0, 6).toUpperCase();
     return `${prefix}-${short}`;
 }

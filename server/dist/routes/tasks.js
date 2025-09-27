@@ -1,12 +1,15 @@
-import { Router } from "express";
-import { newId } from "../db";
-export default function taskRoutes(db) {
-    const r = Router();
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.default = taskRoutes;
+const express_1 = require("express");
+const db_1 = require("../db");
+function taskRoutes(db) {
+    const r = (0, express_1.Router)();
     r.get("/", (_req, res) => res.json(db.tasks));
     r.post("/", (req, res) => {
         const b = (req.body ?? {});
         const task = {
-            id: newId("TK"),
+            id: (0, db_1.newId)("TK"),
             sr: b.sr ?? "",
             title: b.title ?? null,
             description: b.description ?? null,

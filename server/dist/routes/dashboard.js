@@ -1,6 +1,9 @@
-import { Router } from "express";
-export default function dashboardRoutes(db) {
-    const r = Router();
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.default = dashboardRoutes;
+const express_1 = require("express");
+function dashboardRoutes(db) {
+    const r = (0, express_1.Router)();
     r.get("/", (_req, res) => {
         const totalTasks = db.tasks.length;
         const done = db.tasks.filter(t => t.status === "DONE").length;
