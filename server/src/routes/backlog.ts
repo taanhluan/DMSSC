@@ -1,61 +1,91 @@
 import { Router } from "express";
-import type { DB, BacklogItem } from "../db";
-import { newId } from "../db";
+import { prisma } from "../db/prisma";
 
-export default function backlogRoutes(db: DB) {
+export default function backlogRoutes() {
   const r = Router();
 
-  r.get("/", (_req, res) => res.json(db.backlog));
-
-  r.post("/", (req, res) => {
-    const b = (req.body ?? {}) as Partial<BacklogItem>;
-    const item: BacklogItem = {
-      id: newId("BL"),
-      sr: b.sr ?? "",
-      description: b.description ?? "",
-      site: (b as any).site ?? null,
-      owner: (b as any).owner ?? null,
-      priority: b.priority ?? "MEDIUM",
-      startDate: (b.startDate as string | null) ?? null,
-      endDate: (b.endDate as string | null) ?? null,
-      status: (b as any).status ?? "NEW",
-      onOff: (b as any).onOff ?? "ON",
-      progress: (b as any).progress ?? 0,
-      complex: (b as any).complex ?? "",
-      tracks: (Array.isArray((b as any).tracks) ? (b as any).tracks : []) as any,
-    };
-    db.backlog.push(item);
-    res.status(201).json(item);
+  // GET /api/backlog
+  r.get("/", async (_req, res) => {
+    try {
+      const rows = await prisma.backlog.findMany({
+        orderBy: { createdAt: "desc" },
+        take: 200,
+      });
+      res.json(rows);
+    } catch (e) {
+      console.error("[GET /backlog]", e);
+      res.status(500).json({ error: "DB error" });
+    }
   });
 
-  r.put("/:id", (req, res) => {
-    const item = db.backlog.find(x => x.id === req.params.id);
-    if (!item) return res.status(404).json({ error: "not found" });
-
-    const b = (req.body ?? {}) as Partial<BacklogItem>;
-    Object.assign(item, {
-      sr: b.sr ?? item.sr,
-      description: b.description ?? item.description,
-      site: (b as any).site ?? item.site,
-      owner: (b as any).owner ?? item.owner,
-      priority: b.priority ?? item.priority,
-      startDate: (b.startDate as string | null) ?? item.startDate,
-      endDate: (b.endDate as string | null) ?? item.endDate,
-      status: (b as any).status ?? item.status,
-      onOff: (b as any).onOff ?? item.onOff,
-      progress: (b as any).progress ?? item.progress,
-      complex: (b as any).complex ?? item.complex,
-      tracks: Array.isArray((b as any).tracks) ? (b as any).tracks : item.tracks,
-    });
-
-    res.json(item);
+  // POST /api/backlog
+  r.post("/", async (req, res) => {
+    try {
+      const b = req.body ?? {};
+      const created = await prisma.backlog.create({
+        data: {
+          sr: b.sr ?? "",
+          description: b.description ?? "",
+          site: b.site ?? null,
+          owner: b.owner ?? null,
+          priority: b.priority ?? "MEDIUM",
+          startDate: b.startDate ? new Date(b.startDate) : null,
+          endDate: b.endDate ? new Date(b.endDate) : null,
+          status: b.status ?? "NEW",
+          onOff: b.onOff ?? "ON",
+          progress: typeof b.progress === "number" ? b.progress : 0,
+          complex: b.complex ?? null,
+          tracks: Array.isArray(b.tracks) ? b.tracks : [],
+        },
+      });
+      res.status(201).json(created);
+    } catch (e) {
+      console.error("[POST /backlog]", e);
+      res.status(500).json({ error: "DB error" });
+    }
   });
 
-  r.delete("/:id", (req, res) => {
-    const idx = db.backlog.findIndex(x => x.id === req.params.id);
-    if (idx < 0) return res.status(404).json({ error: "not found" });
-    const [del] = db.backlog.splice(idx, 1);
-    res.json(del);
+  // PUT /api/backlog/:id
+  r.put("/:id", async (req, res) => {
+    try {
+      const id = req.params.id;
+      const b = req.body ?? {};
+      const updated = await prisma.backlog.update({
+        where: { id },
+        data: {
+          sr: b.sr,
+          description: b.description,
+          site: b.site,
+          owner: b.owner,
+          priority: b.priority,
+          startDate: b.startDate ? new Date(b.startDate) : undefined,
+          endDate: b.endDate ? new Date(b.endDate) : undefined,
+          status: b.status,
+          onOff: b.onOff,
+          progress: typeof b.progress === "number" ? b.progress : undefined,
+          complex: b.complex,
+          tracks: Array.isArray(b.tracks) ? b.tracks : undefined,
+        },
+      });
+      res.json(updated);
+    } catch (e: any) {
+      if (e?.code === "P2025") return res.status(404).json({ error: "not found" });
+      console.error("[PUT /backlog/:id]", e);
+      res.status(500).json({ error: "DB error" });
+    }
+  });
+
+  // DELETE /api/backlog/:id
+  r.delete("/:id", async (req, res) => {
+    try {
+      const id = req.params.id;
+      const deleted = await prisma.backlog.delete({ where: { id } });
+      res.json(deleted);
+    } catch (e: any) {
+      if (e?.code === "P2025") return res.status(404).json({ error: "not found" });
+      console.error("[DELETE /backlog/:id]", e);
+      res.status(500).json({ error: "DB error" });
+    }
   });
 
   return r;

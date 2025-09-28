@@ -1,7 +1,7 @@
 import express from "express";
 import cors from "cors";
 import createRoutes from "./routes";
-import { db } from "./db";
+// ❌ bỏ: import { db } from "./db";
 
 const app = express();
 
@@ -17,11 +17,15 @@ app.get("/", (_req, res) => {
 // Health check (Render dùng để kiểm tra service)
 app.get("/health", (_req, res) => res.json({ ok: true }));
 
-// API routes
-app.use("/api", createRoutes(db));
+// API routes -> KHÔNG truyền db vào nữa
+app.use("/api", createRoutes());
 
-// Start server
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
   console.log(`API listening on :${PORT}`);
 });
+
+// (optional) graceful shutdown cho Prisma nếu bạn dùng Prisma
+// import { prisma } from "./db/prisma";
+// process.on("SIGINT", async () => { await prisma.$disconnect(); process.exit(0); });
+// process.on("SIGTERM", async () => { await prisma.$disconnect(); process.exit(0); });
