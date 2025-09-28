@@ -1,7 +1,6 @@
-/* ================== DMSSC — PRO UI (Light + Auto Dark) ================== */
+/* ================== DMSSC — PRO UI (Light Only) ================== */
 /* ---------- Design tokens ---------- */
 :root{
-  /* Light */
   --bg:#f6f7fb; --surface:#ffffff; --text:#111827; --muted:#6b7280;
   --brand:#E60012; --ok:#0a8754; --warn:#b45309; --danger:#d32f2f;
   --line:#e5e7eb; --line-2:#eef0f4;
@@ -14,15 +13,6 @@
   --ring-color:rgba(230,0,18,.22);
   --ring:0 0 0 3px var(--ring-color);
   --trans:all .18s ease;
-}
-
-/* ---------- Auto dark (theming optional) ---------- */
-@media (prefers-color-scheme: dark){
-  :root{
-    --bg:#0f1115; --surface:#151821; --text:#e5e7eb; --muted:#9aa3b2;
-    --line:#232837; --line-2:#1a1f2b; --shadow-1:none; --shadow-2:none;
-    --ring-color:rgba(230,0,18,.35);
-  }
 }
 
 /* ---------- Base reset ---------- */
@@ -96,7 +86,7 @@ body{
 
 /* ---------- Content ---------- */
 main#app{ grid-column:2; grid-row:2; padding:24px 16px 40px }
-.container{ max-width:1120px; margin:0 auto }
+.container{ max-width:1200px; margin:0 auto } /* + a bit wider */
 .muted{ color:var(--muted) }
 .hide-on-mobile{ display:block } .only-mobile{ display:none }
 
@@ -119,7 +109,6 @@ main#app{ grid-column:2; grid-row:2; padding:24px 16px 40px }
 .row > *{ grid-column: span 6 }     /* 2 cột mặc định (>=760px) */
 .row.full > *{ grid-column: 1 / -1 }
 
-/* Field wrapper + label */
 .field{ display:flex; flex-direction:column; gap:6px }
 .field label{ font-size:12px; color:var(--muted) }
 
@@ -152,31 +141,25 @@ input[type="date"]::-webkit-calendar-picker-indicator{ filter:invert(30%) }
 .btn.danger{ background:var(--surface); border-color:#fecaca; color:var(--danger) }
 .btn.danger:hover{ background:rgba(220,38,38,.06) }
 
-/* Details/summary (Workstreams) */
-.ws{ border:1px dashed var(--line); border-radius:10px; padding:10px }
-.ws > summary{
-  cursor:pointer; list-style:none; user-select:none; font-weight:600;
-  display:flex; align-items:center; gap:8px; margin:-10px; padding:10px;
-}
-.ws > summary::-webkit-details-marker{ display:none }
-.ws[open]{ border-style:solid }
+/* === ENHANCEMENTS: button sizes/variants === */
+.btn.sm{ height:30px; padding:0 10px; font-size:12px; border-radius:8px }
+.btn.xs{ height:26px; padding:0 8px; font-size:12px; border-radius:8px }
+.btn.pill{ border-radius:999px }
+.btn.soft{ background:#f9fafb; border-color:var(--line); }
+.btn.soft:hover{ background:#f3f4f6 }
+.btn-group{ display:flex; gap:8px; align-items:center }
 
 /* ================= Tables ================= */
 .table-responsive{ width:100%; overflow:auto; border:1px solid var(--line); border-radius:12px; background:var(--surface) }
-.table{ width:100%; border-collapse:separate; border-spacing:0; min-width:820px }
+.table{ width:100%; border-collapse:separate; border-spacing:0; min-width:960px }
 .table thead th{
   text-align:left; padding:10px 12px; color:#374151; background:var(--surface);
   position:sticky; top:0; z-index:1; border-bottom:2px solid var(--line); font-weight:700;
 }
-.table tbody td{ padding:10px 12px; border-bottom:1px solid var(--line-2); font-size:14px }
+.table tbody td{ padding:10px 12px; border-bottom:1px solid var(--line-2); font-size:14px; vertical-align:top }
+.table tbody tr:nth-child(even){ background:#fafafa }
 .table tbody tr:hover{ background:rgba(17,24,39,.03) }
 .table td .actions{ display:flex; gap:8px }
-
-/* Zebra subtle */
-.table tbody tr:nth-child(even){ background:transparent }
-@media (prefers-color-scheme: dark){
-  .table thead th{ color:#cbd5e1 }
-}
 
 /* ================= Badges & KPI ================= */
 .badge{
@@ -206,18 +189,54 @@ input[type="date"]::-webkit-calendar-picker-indicator{ filter:invert(30%) }
 @keyframes toastIn{ to{ opacity:1; transform:translateY(0) } }
 
 /* ================= Tracks (Backlog) ================= */
-.tracks-cell{ vertical-align:top; min-width:180px }
-.tracks-col{ display:flex; flex-direction:column; gap:6px }
-.t-line{ display:flex; gap:8px; flex-wrap:wrap }
-.t-phase{ color:#374151; font-weight:700; min-width:190px }
-.t-pic{ color:#4b5563 }
+.row-details td { background: var(--surface); }
+.tracks-grid {
+  border:1px solid var(--line);
+  border-radius:12px;
+  overflow:hidden;
+  margin-top:6px;
+  box-shadow:var(--shadow-1);
+}
+.tracks-grid .tg-head{
+  display:grid;
+  grid-template-columns: 200px 160px 1fr 120px 120px 130px; /* + Actions */
+  background:#fafafa; border-bottom:1px solid var(--line);
+}
+.tracks-grid .tg-body{ display:block }
+.tg-head .tg-h { padding:10px 12px; font-weight:600; color:#6b7280; font-size:13px }
+
+.tg-row{
+  display:grid;
+  grid-template-columns: 200px 160px 1fr 120px 120px 130px;
+  align-items:center;
+  border-bottom:1px solid var(--line-2);
+  background:#fff;
+}
+.tg-row:hover{ background:#fbfbfc }
+.tg-cell{ padding:10px 12px; font-size:14px }
+.tg-phase{ font-weight:600; color:#374151 }
+.tg-state .badge{ margin-right:6px }
+.tg-actions{ display:flex; gap:8px; justify-content:flex-start }
+
+/* ===== Expand/Collapse look like buttons ===== */
+.t-exp,
+[data-collapse]{ /* both use .btn.sm in markup; this is fallback if class missing */
+  border:1px solid var(--line);
+  background:#f9fafb;
+  border-radius:999px;
+  padding:6px 12px;
+  font-size:12px;
+}
+.t-exp:hover,[data-collapse]:hover{ background:#f3f4f6 }
 
 /* ================= Accessibility / Focus ================= */
 :focus-visible{ outline:none; box-shadow:var(--ring); border-radius:10px }
 
 /* ================= Responsive ================= */
-@media (max-width:1200px){
-  .container{ max-width:980px }
+@media (max-width:1280px){
+  .container{ max-width:1120px }
+  .tracks-grid .tg-head,
+  .tg-row{ grid-template-columns: 180px 150px 1fr 110px 110px 120px; }
 }
 @media (max-width:1024px){
   body{ grid-template-columns:1fr; grid-template-rows:auto auto 1fr }
@@ -225,13 +244,38 @@ input[type="date"]::-webkit-calendar-picker-indicator{ filter:invert(30%) }
   .topbar{ grid-row:1 }
   main#app{ grid-row:3; padding:18px 12px 28px }
   .hide-on-mobile{ display:none } .only-mobile{ display:inline-flex }
-  .row > *{ grid-column: span 12 } /* form về 1 cột */
+  .row > *{ grid-column: span 12 }
+  .table{ min-width:820px }
+  .tracks-grid .tg-head,
+  .tg-row{ grid-template-columns: 160px 140px 1fr 100px 100px 110px; font-size:13px }
 }
+/* ===== Mobile: transform tracks to cards ===== */
 @media (max-width:760px){
   .container{ max-width:100% }
   main#app>.card{ margin:12px 0 }
   .table{ min-width:640px }
   .topbar{ padding:10px 12px }
+
+  .tracks-grid{ border-radius:10px }
+  .tracks-grid .tg-head{ display:none }
+  .tg-body{ display:flex; flex-direction:column }
+  .tg-row{
+    display:grid;
+    grid-template-columns: 1fr 1fr;  /* two columns card */
+    gap:6px 10px;
+    padding:10px 8px;
+  }
+  .tg-cell{
+    padding:4px 6px;
+    background:#fff;
+  }
+  .tg-phase{ grid-column:1 / -1; font-weight:700 }
+  .tg-actions{ grid-column:1 / -1; justify-content:flex-end }
+  /* add inline labels for clarity */
+  .tg-state::before{ content:'State'; display:block; font-size:11px; color:var(--muted) }
+  .tg-pic::before{ content:'PIC(s)'; display:block; font-size:11px; color:var(--muted) }
+  .tg-date:nth-of-type(4)::before{ content:'Start'; display:block; font-size:11px; color:var(--muted) }
+  .tg-date:nth-of-type(5)::before{ content:'End'; display:block; font-size:11px; color:var(--muted) }
 }
 
 /* ================= Reduced motion ================= */
