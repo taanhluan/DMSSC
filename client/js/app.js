@@ -1,4 +1,5 @@
 // ===== Router bindings =====
+import "./api.js";  // Global API
 import { route, startRouter } from './router.js';
 import Dashboard from './views/dashboard.js';
 import Backlog from './views/backlog.js';
