@@ -1,15 +1,16 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = dashboardRoutes;
+// src/routes/dashboard.ts
 const express_1 = require("express");
-function dashboardRoutes(db) {
+// import { prisma } from "../db/prisma"; // bật lên nếu cần query DB
+function dashboardRoutes() {
     const r = (0, express_1.Router)();
-    r.get("/", (_req, res) => {
-        const totalTasks = db.tasks.length;
-        const done = db.tasks.filter(t => t.status === "DONE").length;
-        const open = totalTasks - done;
-        const hours = db.tasks.reduce((a, b) => a + (Number(b.hours) || 0), 0);
-        res.json({ backlog: db.backlog.length, tasks: totalTasks, done, open, hours });
+    // Ví dụ: mock hoặc query thật
+    r.get("/", async (_req, res) => {
+        // const count = await prisma.backlog.count();
+        // res.json({ ok: true, backlogCount: count });
+        res.json({ ok: true });
     });
     return r;
 }

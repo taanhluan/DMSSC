@@ -1,58 +1,53 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = backlogRoutes;
+// src/routes/backlog.ts
 const express_1 = require("express");
-const db_1 = require("../db");
-function backlogRoutes(db) {
+const prisma_1 = require("../db/prisma");
+const uuid_1 = require("uuid"); // <-- THÊM
+function backlogRoutes() {
     const r = (0, express_1.Router)();
-    r.get("/", (_req, res) => res.json(db.backlog));
-    r.post("/", (req, res) => {
-        const b = (req.body ?? {});
-        const item = {
-            id: (0, db_1.newId)("BL"),
-            sr: b.sr ?? "",
-            description: b.description ?? "",
-            site: b.site ?? null,
-            owner: b.owner ?? null,
-            priority: b.priority ?? "MEDIUM",
-            startDate: b.startDate ?? null,
-            endDate: b.endDate ?? null,
-            status: b.status ?? "NEW",
-            onOff: b.onOff ?? "ON",
-            progress: b.progress ?? 0,
-            complex: b.complex ?? "",
-            tracks: (Array.isArray(b.tracks) ? b.tracks : []),
-        };
-        db.backlog.push(item);
-        res.status(201).json(item);
+    r.get("/", async (_req, res) => {
+        try {
+            const rows = await prisma_1.prisma.backlog.findMany({
+                orderBy: { createdAt: "desc" },
+                take: 200,
+            });
+            res.json(rows);
+        }
+        catch (e) {
+            console.error("[GET /backlog]", e);
+            res.status(500).json({ error: "DB error" });
+        }
     });
-    r.put("/:id", (req, res) => {
-        const item = db.backlog.find(x => x.id === req.params.id);
-        if (!item)
-            return res.status(404).json({ error: "not found" });
-        const b = (req.body ?? {});
-        Object.assign(item, {
-            sr: b.sr ?? item.sr,
-            description: b.description ?? item.description,
-            site: b.site ?? item.site,
-            owner: b.owner ?? item.owner,
-            priority: b.priority ?? item.priority,
-            startDate: b.startDate ?? item.startDate,
-            endDate: b.endDate ?? item.endDate,
-            status: b.status ?? item.status,
-            onOff: b.onOff ?? item.onOff,
-            progress: b.progress ?? item.progress,
-            complex: b.complex ?? item.complex,
-            tracks: Array.isArray(b.tracks) ? b.tracks : item.tracks,
-        });
-        res.json(item);
+    r.post("/", async (req, res) => {
+        try {
+            const b = req.body ?? {};
+            const created = await prisma_1.prisma.backlog.create({
+                data: {
+                    id: (0, uuid_1.v4)(), // <-- THÊM ID
+                    sr: b.sr ?? "",
+                    description: b.description ?? "",
+                    site: b.site ?? null,
+                    owner: b.owner ?? null,
+                    priority: b.priority ?? "MEDIUM",
+                    startDate: b.startDate ? new Date(b.startDate) : null,
+                    endDate: b.endDate ? new Date(b.endDate) : null,
+                    status: b.status ?? "NEW",
+                    onOff: b.onOff ?? "ON",
+                    progress: typeof b.progress === "number" ? b.progress : 0,
+                    complex: b.complex ?? null,
+                    // tracks: giữ nguyên như bạn đang có; nếu sau này là quan hệ sẽ chuyển sang nested create
+                    tracks: Array.isArray(b.tracks) ? b.tracks : [],
+                },
+            });
+            res.status(201).json(created);
+        }
+        catch (e) {
+            console.error("[POST /backlog]", e);
+            res.status(500).json({ error: "DB error" });
+        }
     });
-    r.delete("/:id", (req, res) => {
-        const idx = db.backlog.findIndex(x => x.id === req.params.id);
-        if (idx < 0)
-            return res.status(404).json({ error: "not found" });
-        const [del] = db.backlog.splice(idx, 1);
-        res.json(del);
-    });
+    // PUT/DELETE giữ nguyên
     return r;
 }

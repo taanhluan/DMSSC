@@ -1,14 +1,16 @@
+// src/routes/dashboard.ts
 import { Router } from "express";
-import type { DB } from "../db";
+// import { prisma } from "../db/prisma"; // bật lên nếu cần query DB
 
-export default function dashboardRoutes(db: DB) {
+export default function dashboardRoutes() {
   const r = Router();
-  r.get("/", (_req, res) => {
-    const totalTasks = db.tasks.length;
-    const done = db.tasks.filter(t => t.status === "DONE").length;
-    const open = totalTasks - done;
-    const hours = db.tasks.reduce((a, b) => a + (Number(b.hours) || 0), 0);
-    res.json({ backlog: db.backlog.length, tasks: totalTasks, done, open, hours });
+
+  // Ví dụ: mock hoặc query thật
+  r.get("/", async (_req, res) => {
+    // const count = await prisma.backlog.count();
+    // res.json({ ok: true, backlogCount: count });
+    res.json({ ok: true });
   });
+
   return r;
 }
