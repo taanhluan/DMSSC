@@ -4,7 +4,8 @@ const $ = (s, root=document) => root.querySelector(s);
 
 /* ====== Constants ====== */
 const PRIORITY_LIST = ['LOW','MEDIUM','HIGH'];
-const ONOFF_LIST = ['ON','OFF'];
+// Dữ liệu thật trong DB: "On Track" / "Hold" / "Risk"
+const ONOFF_LIST = ['On Track','Hold','Risk'];
 
 /* ---- Sites ---- */
 const SITE_LIST = [
@@ -52,6 +53,12 @@ function orderedTracks(tracks=[]) {
   return PHASE_ORDER.map(ph => map.get(ph) || {
     phase: ph, state:'NOT_START', pic:[], startDate:null, endDate:null, hours:0, progress:null
   });
+}
+
+// ISO -> YYYY-MM-DD cho <input type="date">
+function toYMD(iso) {
+  if (!iso) return '';
+  try { return new Date(iso).toISOString().slice(0,10); } catch { return ''; }
 }
 
 /* ====== Form track row ====== */
@@ -122,7 +129,7 @@ function row(b){
     <td>${b.description||''}</td>
     <td>${b.owner||''}</td>
     <td>${b.priority||''}</td>
-    <td>${b.dueDate||''}</td>
+    <td>${b.startDate ? toYMD(b.startDate) : ''}</td>
     <td>${b.onOff||''}</td>
     <td>${b.progress??0}</td>
     <td>${b.complex||''}</td>
@@ -167,21 +174,28 @@ export default async function Backlog(){
   <div class="card">
     <h3>Create / Update Backlog</h3>
     <div class="row">
-      <select class="input" id="b-site">
-        ${siteOptions('DLVN')}
-      </select>
-      <input class="input" id="b-sr" placeholder="SR" />
-      <input class="input" id="b-desc" placeholder="Description" />
+      <div class="field">
+        <label>Site</label>
+        <select class="input" id="b-site">${siteOptions('DLVN')}</select>
+      </div>
+      <div class="field">
+        <label>SR</label>
+        <input class="input" id="b-sr" placeholder="VD: SR18913" />
+      </div>
+      <div class="field" style="grid-column:1 / -1">
+        <label>Description</label>
+        <textarea class="input" id="b-desc" placeholder="Mô tả ngắn"></textarea>
+      </div>
     </div>
     <div class="row">
-      <input class="input" id="b-owner" placeholder="Owner" />
-      <select class="input" id="b-pri">${optList(PRIORITY_LIST,'MEDIUM')}</select>
-      <input class="input" id="b-due" type="date" title="DueDate" />
+      <div class="field"><label>Owner</label><input class="input" id="b-owner" placeholder="VD: Luan, Ta Anh [Tech/DMSSC]" /></div>
+      <div class="field"><label>Priority</label><select class="input" id="b-pri">${optList(PRIORITY_LIST,'MEDIUM')}</select></div>
+      <div class="field"><label>Start Date</label><input class="input" id="b-start" type="date" /></div>
     </div>
     <div class="row">
-      <select class="input" id="b-onoff">${optList(ONOFF_LIST,'ON')}</select>
-      <input class="input" id="b-progress" type="number" min="0" max="100" placeholder="%Overall (optional)" />
-      <input class="input" id="b-complex" placeholder="Complex (S/M/L)" />
+      <div class="field"><label>On/Off</label><select class="input" id="b-onoff">${optList(ONOFF_LIST,'On Track')}</select></div>
+      <div class="field"><label>% Overall</label><input class="input" id="b-progress" type="number" min="0" max="100" placeholder="0..100" /></div>
+      <div class="field"><label>Complex</label><input class="input" id="b-complex" placeholder="S/M/L hoặc số" /></div>
     </div>
 
     <!-- Workstreams (Advanced) -->
@@ -230,7 +244,7 @@ export default async function Backlog(){
         <thead>
           <tr>
             <th>ID</th><th>Site</th><th>SR</th><th>Description</th><th>Owner</th><th>Priority</th>
-            <th>Due</th><th>On/Off</th><th>%Overall</th><th>Complex</th>
+            <th>Start</th><th>On/Off</th><th>%Overall</th><th>Complex</th>
             <th>Phase / State / %</th><th>PIC(s)</th><th>Start</th><th>End</th>
             <th></th>
           </tr>
@@ -256,9 +270,9 @@ export default async function Backlog(){
 
     /* ---- reset form ---- */
     const resetForm = () => {
-      ['#b-sr','#b-desc','#b-owner','#b-due','#b-progress','#b-complex'].forEach(sel => { const el=$(sel,app); if(el) el.value=''; });
+      ['#b-sr','#b-desc','#b-owner','#b-start','#b-progress','#b-complex'].forEach(sel => { const el=$(sel,app); if(el) el.value=''; });
       $('#b-pri',app).value='MEDIUM';
-      $('#b-onoff',app).value='ON';
+      $('#b-onoff',app).value='On Track';
       $('#b-site',app).value='DLVN';
       tracks = [];
       editingId = null;
@@ -329,7 +343,7 @@ export default async function Backlog(){
         description: getVal('#b-desc'),
         owner: getVal('#b-owner'),
         priority: $('#b-pri',app).value,
-        dueDate: $('#b-due',app).value || null,
+        startDate: $('#b-start',app).value || null,
         onOff: $('#b-onoff',app).value,
         progress: Number($('#b-progress',app).value || 0),
         complex: getVal('#b-complex'),
@@ -377,8 +391,8 @@ export default async function Backlog(){
         $('#b-desc',app).value = it.description || '';
         $('#b-owner',app).value = it.owner || '';
         $('#b-pri',app).value = it.priority || 'MEDIUM';
-        $('#b-due',app).value = it.dueDate || '';
-        $('#b-onoff',app).value = it.onOff || 'ON';
+        $('#b-start',app).value = toYMD(it.startDate) || '';
+        $('#b-onoff',app).value = it.onOff || 'On Track';
         $('#b-progress',app).value = it.progress ?? 0;
         $('#b-complex',app).value = it.complex || '';
         tracks = Array.isArray(it.tracks) ? JSON.parse(JSON.stringify(it.tracks)) : [];
