@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>DMSSC Management System</title>
+    <script type="module" crossorigin src="/assets/index-D7IOajw5.js"></script>
+    <link rel="stylesheet" crossorigin href="/assets/index-Cj3S8Qim.css">
+  </head>
+  <body>
+    <!-- Backdrop cho off-canvas sidebar -->
+    <div class="sidebar-backdrop" id="sbBackdrop" aria-hidden="true"></div>
+
+    <!-- Sidebar: mở sẵn trên desktop -->
+    <aside class="sidebar" id="sidebar" data-state="open" aria-label="Main navigation">
+      <h2>DMSSC</h2>
+      <nav>
+        <a href="#/dashboard" data-route>Dashboard</a>
+        <a href="#/backlog" data-route>Backlog</a>
+        <a href="#/tasks" data-route>Tasks</a>
+        <a href="#/report" data-route>Report</a>
+      </nav>
+    </aside>
+
+    <!-- Topbar -->
+    <header class="topbar" role="banner">
+      <div style="display:flex;align-items:center;gap:10px">
+        <button class="icon-btn only-mobile" id="btnOpenSidebar" aria-label="Open menu" aria-expanded="true">☰</button>
+        <div class="title">DMSSC Management System</div>
+      </div>
+      <div id="status" class="muted"></div>
+    </header>
+
+    <!-- Nội dung -->
+    <main id="app" role="main"></main>
+
+    <!-- Toast -->
+    <div id="toast" aria-live="polite" aria-atomic="true"></div>
+
+    <!-- Env API_URL (vite) -->
+
+    <!-- Global API -->
+    <script src="/js/api.js"></script>
+
+    <!-- App -->
+  </body>
+</html>
